@@ -40,6 +40,12 @@ const STOP_WORDS = new Set([
   "clearImmediate", "queueMicrotask", "fetch", "isNaN", "isFinite",
   "encodeURIComponent", "decodeURIComponent", "encodeURI", "decodeURI",
   "structuredClone", "btoa", "atob",
+  // common Node.js core-module functions (fs, path, child_process, etc.)
+  // that show up in usage examples but belong to Node, not the package
+  "createWriteStream", "createReadStream", "readFileSync", "writeFileSync",
+  "existsSync", "readFile", "writeFile", "exec", "execSync", "spawn",
+  "spawnSync", "dirname", "basename", "extname", "readdir", "mkdir",
+  "unlink", "rename", "stat",
 ]);
 
 const JS_EXPORT_PATTERNS = [
