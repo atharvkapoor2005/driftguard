@@ -9,6 +9,26 @@ Paste a public GitHub repo URL and DriftGuard scans it for two things nobody che
 
 Next.js 14 (App Router) + TypeScript + Tailwind + Framer Motion + Recharts, backed by the GitHub REST API and the npm registry. No database — every scan runs live against the repo you give it.
 
+## Use it in your own repo (GitHub Action)
+
+Add this to `.github/workflows/driftguard.yml` in any repo you want scanned on every PR:
+
+```yaml
+name: DriftGuard
+on: pull_request
+permissions:
+  pull-requests: write
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: atharvkapoor2005/driftguard/action@v1
+        with:
+          fail-on-high: "false" # set to "true" to block merges on high-severity findings
+```
+
+It calls the hosted DriftGuard API, then posts a single, auto-updating PR comment with the findings and writes a summary to the Actions run. No install, no config file, no API key required.
+
 ## Running locally
 
 ```bash

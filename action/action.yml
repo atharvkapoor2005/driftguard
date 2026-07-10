@@ -1,0 +1,37 @@
+name: "DriftGuard"
+description: "Catch stale README examples and risky major-version dependency upgrades before they ship."
+branding:
+  icon: "shield"
+  color: "blue"
+
+inputs:
+  github-token:
+    description: "Token used to post/update the PR comment. Defaults to the workflow's automatic token."
+    required: false
+    default: ${{ github.token }}
+  fail-on-high:
+    description: "Fail the check if any high-severity finding is present."
+    required: false
+    default: "false"
+  api-url:
+    description: "Base URL of the DriftGuard API."
+    required: false
+    default: "https://driftguard-nu.vercel.app"
+
+outputs:
+  high:
+    description: "Number of high-severity findings."
+  medium:
+    description: "Number of medium-severity findings."
+  total:
+    description: "Total number of findings."
+
+runs:
+  using: "composite"
+  steps:
+    - run: node "${{ github.action_path }}/index.js"
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        FAIL_ON_HIGH: ${{ inputs.fail-on-high }}
+        API_URL: ${{ inputs.api-url }}
