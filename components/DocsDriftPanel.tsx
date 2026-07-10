@@ -66,8 +66,9 @@ export default function DocsDriftPanel({ findings }: { findings: DocsDriftFindin
               key={f.id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
+              whileHover={{ y: -2, borderColor: "rgba(34,211,238,0.35)" }}
               transition={{ delay: Math.min(i * 0.03, 0.3) }}
-              className="glass rounded-xl border border-border overflow-hidden"
+              className="glass rounded-xl border border-border overflow-hidden transition-shadow hover:shadow-[0_8px_24px_-12px_rgba(0,0,0,0.5)]"
             >
               <button
                 onClick={() => setOpenId(open ? null : f.id)}

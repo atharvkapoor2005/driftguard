@@ -9,8 +9,8 @@ import {
   Package,
   Github,
   RotateCcw,
-  ShieldAlert,
 } from "lucide-react";
+import Logo from "@/components/Logo";
 import RepoInput from "@/components/RepoInput";
 import AuthButton from "@/components/AuthButton";
 import WatchButton from "@/components/WatchButton";
@@ -19,6 +19,9 @@ import StatCard from "@/components/StatCard";
 import SeverityChart from "@/components/SeverityChart";
 import DocsDriftPanel from "@/components/DocsDriftPanel";
 import DepRadarPanel from "@/components/DepRadarPanel";
+import BackgroundGrid from "@/components/BackgroundGrid";
+import CursorGlow from "@/components/CursorGlow";
+import SocialProof from "@/components/SocialProof";
 import { AnalyzeResult } from "@/lib/types";
 
 type Tab = "docs" | "deps";
@@ -55,6 +58,8 @@ export default function Home() {
 
   return (
     <main className="relative min-h-screen overflow-hidden">
+      <BackgroundGrid />
+      <CursorGlow />
       <div className="pointer-events-none fixed inset-0 -z-10">
         <div className="absolute top-[-10%] left-[10%] w-96 h-96 bg-accent/20 rounded-full blur-3xl animate-blob" />
         <div className="absolute bottom-[-10%] right-[10%] w-96 h-96 bg-accent2/20 rounded-full blur-3xl animate-blob" />
@@ -62,7 +67,7 @@ export default function Home() {
 
       <header className="max-w-6xl mx-auto px-6 pt-8 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <ShieldAlert className="w-5 h-5 text-accent2" />
+          <Logo className="w-6 h-6" />
           <span className="font-bold text-lg tracking-tight">
             Drift<span className="text-gradient">Guard</span>
           </span>
@@ -208,6 +213,8 @@ export default function Home() {
           </motion.section>
         )}
       </AnimatePresence>
+
+      {!result && !loading && <SocialProof />}
     </main>
   );
 }

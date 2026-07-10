@@ -1,7 +1,8 @@
 import { auth, signIn } from "@/auth";
 import WatchList from "@/components/WatchList";
 import Link from "next/link";
-import { ShieldAlert, Github } from "lucide-react";
+import { Github } from "lucide-react";
+import Logo from "@/components/Logo";
 
 export default async function WatchPage() {
   const session = await auth();
@@ -10,7 +11,7 @@ export default async function WatchPage() {
     <main className="relative min-h-screen">
       <header className="max-w-3xl mx-auto px-6 pt-8 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <ShieldAlert className="w-5 h-5 text-accent2" />
+          <Logo className="w-6 h-6" />
           <span className="font-bold text-lg tracking-tight">
             Drift<span className="text-gradient">Guard</span>
           </span>

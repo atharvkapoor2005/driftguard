@@ -75,3 +75,8 @@ export const watchedRepos = pgTable("watched_repo", {
   lastFindingIds: jsonb("lastFindingIds").$type<string[]>().notNull().default([]),
   active: boolean("active").notNull().default(true),
 });
+
+export const appStats = pgTable("app_stats", {
+  id: text("id").primaryKey().default("singleton"),
+  totalScans: integer("totalScans").notNull().default(0),
+});

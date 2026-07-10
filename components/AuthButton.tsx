@@ -3,6 +3,7 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import { Github, LogOut, Eye } from "lucide-react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 export default function AuthButton() {
   const { data: session, status } = useSession();
@@ -13,12 +14,14 @@ export default function AuthButton() {
 
   if (!session?.user) {
     return (
-      <button
+      <motion.button
+        whileHover={{ y: -2, borderColor: "rgba(34,211,238,0.5)" }}
+        whileTap={{ scale: 0.96 }}
         onClick={() => signIn("github")}
-        className="flex items-center gap-1.5 text-xs font-medium text-gray-200 border border-border rounded-full px-3 py-1.5 hover:border-accent2/50 hover:text-accent2 transition-colors"
+        className="flex items-center gap-1.5 text-xs font-medium text-gray-200 border border-border rounded-full px-3 py-1.5 hover:text-accent2 transition-colors"
       >
         <Github className="w-3.5 h-3.5" /> Sign in
-      </button>
+      </motion.button>
     );
   }
 

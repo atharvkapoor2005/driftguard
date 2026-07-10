@@ -75,13 +75,15 @@ export default function WatchList() {
               className="w-full bg-panel2 border border-border rounded-lg pl-9 pr-3 py-2 text-sm outline-none focus:border-accent2/60"
             />
           </div>
-          <button
+          <motion.button
+            whileHover={{ scale: 1.03, boxShadow: "0 0 24px -4px rgba(34,211,238,0.6)" }}
+            whileTap={{ scale: 0.97 }}
             type="submit"
             disabled={adding}
-            className="flex items-center gap-1.5 bg-gradient-to-r from-accent to-accent2 text-white text-sm font-medium rounded-lg px-4 disabled:opacity-60"
+            className="btn-shine flex items-center gap-1.5 bg-gradient-to-r from-accent to-accent2 text-white text-sm font-medium rounded-lg px-4 disabled:opacity-60"
           >
             <Plus className="w-4 h-4" /> Watch
-          </button>
+          </motion.button>
         </div>
         <div className="relative">
           <Slack className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
