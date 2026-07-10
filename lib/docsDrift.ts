@@ -34,6 +34,12 @@ const STOP_WORDS = new Set([
   "parseInt", "parseFloat", "stringify", "parse", "assign", "freeze",
   "create", "define", "toJSON", "toFixed", "match", "replace", "split",
   "trim", "includes", "indexOf", "toLowerCase", "toUpperCase",
+  // JS/Node globals — never a package's own export, but constantly show up
+  // in usage examples (setTimeout(fn, 100), fetch(url), etc.)
+  "setTimeout", "setInterval", "setImmediate", "clearTimeout", "clearInterval",
+  "clearImmediate", "queueMicrotask", "fetch", "isNaN", "isFinite",
+  "encodeURIComponent", "decodeURIComponent", "encodeURI", "decodeURI",
+  "structuredClone", "btoa", "atob",
 ]);
 
 const JS_EXPORT_PATTERNS = [
