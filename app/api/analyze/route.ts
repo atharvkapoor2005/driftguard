@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "repoUrl is required" }, { status: 400 });
     }
     const result = await runAnalysis(repoUrl);
-    incrementScanCount();
+    await incrementScanCount();
     return NextResponse.json(result);
   } catch (err: any) {
     return NextResponse.json(
