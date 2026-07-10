@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Trash2, Github, Clock, AlertTriangle, Slack } from "lucide-react";
+import { Plus, Trash2, Github, Clock, AlertTriangle, Slack, Crown, X } from "lucide-react";
+import UpgradeCard from "./UpgradeCard";
 
 interface WatchedRepo {
   id: string;
@@ -15,15 +16,21 @@ interface WatchedRepo {
 
 export default function WatchList() {
   const [repos, setRepos] = useState<WatchedRepo[] | null>(null);
+  const [pro, setPro] = useState(false);
+  const [limit, setLimit] = useState(1);
   const [input, setInput] = useState("");
   const [webhook, setWebhook] = useState("");
   const [adding, setAdding] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [needsUpgrade, setNeedsUpgrade] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
 
   const load = async () => {
     const res = await fetch("/api/watch");
     const data = await res.json();
     setRepos(data.repos ?? []);
+    setPro(!!data.pro);
+    setLimit(data.limit ?? 1);
   };
 
   useEffect(() => {
@@ -35,6 +42,7 @@ export default function WatchList() {
     if (!input.trim()) return;
     setAdding(true);
     setError(null);
+    setNeedsUpgrade(false);
     try {
       const res = await fetch("/api/watch", {
         method: "POST",
@@ -42,7 +50,10 @@ export default function WatchList() {
         body: JSON.stringify({ repoUrl: input.trim(), slackWebhookUrl: webhook.trim() || undefined }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      if (!res.ok) {
+        setNeedsUpgrade(!!data.needsUpgrade);
+        throw new Error(data.error);
+      }
       setInput("");
       setWebhook("");
       await load();
@@ -62,8 +73,43 @@ export default function WatchList() {
     });
   };
 
+  const cancelSubscription = async () => {
+    if (!confirm("Cancel your Pro subscription? You'll drop to 1 watched repo.")) return;
+    setCancelling(true);
+    try {
+      await fetch("/api/billing/cancel-subscription", { method: "POST" });
+      await load();
+    } finally {
+      setCancelling(false);
+    }
+  };
+
+  const atLimit = repos !== null && repos.length >= limit;
+
   return (
     <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <span
+          className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full border ${
+            pro
+              ? "border-accent2/40 bg-accent2/10 text-accent2"
+              : "border-border text-gray-400"
+          }`}
+        >
+          {pro && <Crown className="w-3 h-3" />}
+          {pro ? "Pro plan" : "Free plan"} · {repos?.length ?? 0}/{limit} repos
+        </span>
+        {pro && (
+          <button
+            onClick={cancelSubscription}
+            disabled={cancelling}
+            className="flex items-center gap-1 text-xs text-gray-500 hover:text-high transition-colors"
+          >
+            <X className="w-3 h-3" /> Cancel subscription
+          </button>
+        )}
+      </div>
+
       <form onSubmit={addRepo} className="glass rounded-xl border border-border p-4 space-y-3">
         <div className="flex gap-2">
           <div className="relative flex-1">
@@ -79,7 +125,7 @@ export default function WatchList() {
             whileHover={{ scale: 1.03, boxShadow: "0 0 24px -4px rgba(34,211,238,0.6)" }}
             whileTap={{ scale: 0.97 }}
             type="submit"
-            disabled={adding}
+            disabled={adding || atLimit}
             className="btn-shine flex items-center gap-1.5 bg-gradient-to-r from-accent to-accent2 text-white text-sm font-medium rounded-lg px-4 disabled:opacity-60"
           >
             <Plus className="w-4 h-4" /> Watch
@@ -96,6 +142,8 @@ export default function WatchList() {
         </div>
         {error && <p className="text-xs text-high">{error}</p>}
       </form>
+
+      {needsUpgrade && !pro && <UpgradeCard onUpgraded={load} />}
 
       {repos === null ? (
         <div className="h-20 rounded-xl shimmer-bg animate-shimmer" />

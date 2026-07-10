@@ -80,3 +80,14 @@ export const appStats = pgTable("app_stats", {
   id: text("id").primaryKey().default("singleton"),
   totalScans: integer("totalScans").notNull().default(0),
 });
+
+export const subscriptions = pgTable("subscription", {
+  userId: text("userId")
+    .primaryKey()
+    .references(() => users.id, { onDelete: "cascade" }),
+  razorpayCustomerId: text("razorpayCustomerId"),
+  razorpaySubscriptionId: text("razorpaySubscriptionId"),
+  status: text("status").notNull().default("none"), // none | created | active | past_due | cancelled
+  currentPeriodEnd: timestamp("currentPeriodEnd", { mode: "date" }),
+  updatedAt: timestamp("updatedAt", { mode: "date" }).notNull().defaultNow(),
+});

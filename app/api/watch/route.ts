@@ -4,10 +4,10 @@ import { db } from "@/lib/db";
 import { watchedRepos } from "@/lib/db/schema";
 import { and, eq } from "drizzle-orm";
 import { parseRepoUrl } from "@/lib/github";
+import { isProUser } from "@/lib/db/subscription";
+import { FREE_WATCHED_REPO_LIMIT, PRO_WATCHED_REPO_LIMIT } from "@/lib/razorpay";
 
 export const runtime = "nodejs";
-
-const MAX_WATCHED_REPOS = 10;
 
 export async function GET() {
   const session = await auth();
@@ -18,7 +18,12 @@ export async function GET() {
     .from(watchedRepos)
     .where(eq(watchedRepos.userId, session.user.id));
 
-  return NextResponse.json({ repos: rows });
+  const pro = await isProUser(session.user.id);
+  return NextResponse.json({
+    repos: rows,
+    pro,
+    limit: pro ? PRO_WATCHED_REPO_LIMIT : FREE_WATCHED_REPO_LIMIT,
+  });
 }
 
 export async function POST(req: NextRequest) {
@@ -44,9 +49,17 @@ export async function POST(req: NextRequest) {
   if (existing.some((r) => r.repoFullName.toLowerCase() === repoFullName.toLowerCase())) {
     return NextResponse.json({ error: "Already watching this repo" }, { status: 409 });
   }
-  if (existing.length >= MAX_WATCHED_REPOS) {
+
+  const pro = await isProUser(session.user.id);
+  const limit = pro ? PRO_WATCHED_REPO_LIMIT : FREE_WATCHED_REPO_LIMIT;
+  if (existing.length >= limit) {
     return NextResponse.json(
-      { error: `Free plan is capped at ${MAX_WATCHED_REPOS} watched repos.` },
+      {
+        error: pro
+          ? `Pro plan is capped at ${limit} watched repos.`
+          : `Free plan includes ${limit} watched repo. Upgrade to Pro for up to ${PRO_WATCHED_REPO_LIMIT}.`,
+        needsUpgrade: !pro,
+      },
       { status: 403 }
     );
   }
