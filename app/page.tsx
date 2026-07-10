@@ -12,6 +12,8 @@ import {
   ShieldAlert,
 } from "lucide-react";
 import RepoInput from "@/components/RepoInput";
+import AuthButton from "@/components/AuthButton";
+import WatchButton from "@/components/WatchButton";
 import HeroIllustration from "@/components/HeroIllustration";
 import StatCard from "@/components/StatCard";
 import SeverityChart from "@/components/SeverityChart";
@@ -65,14 +67,17 @@ export default function Home() {
             Drift<span className="text-gradient">Guard</span>
           </span>
         </div>
-        {result && (
-          <button
-            onClick={reset}
-            className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-200 border border-border rounded-full px-3 py-1.5 transition-colors"
-          >
-            <RotateCcw className="w-3.5 h-3.5" /> Analyze another repo
-          </button>
-        )}
+        <div className="flex items-center gap-3">
+          {result && (
+            <button
+              onClick={reset}
+              className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-200 border border-border rounded-full px-3 py-1.5 transition-colors"
+            >
+              <RotateCcw className="w-3.5 h-3.5" /> Analyze another repo
+            </button>
+          )}
+          <AuthButton />
+        </div>
       </header>
 
       <AnimatePresence mode="wait">
@@ -149,6 +154,7 @@ export default function Home() {
                   {result.stats.dependenciesScanned} dependencies
                 </p>
               </div>
+              <WatchButton repoUrl={result.repoUrl} />
             </div>
 
             <div className="grid md:grid-cols-3 gap-5 mb-8">

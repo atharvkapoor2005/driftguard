@@ -163,7 +163,6 @@ export function analyzeDocsDrift(
   const apis = extractExportedApis(sourceFiles);
   const { calls, bareIdentifiers } = extractReadmeMentions(readme || "");
   const findings: DocsDriftFinding[] = [];
-  let idCounter = 0;
   const apiNames = new Set(apis.map((a) => a.name));
 
   // Only a capped subset of source files gets scanned, so a name missing from
@@ -176,7 +175,7 @@ export function analyzeDocsDrift(
   for (const [name, call] of calls) {
     if (apiNames.has(name) || occursAnywhere(name)) continue;
     findings.push({
-      id: `dd-${idCounter++}`,
+      id: `dd-removed-${name}`,
       kind: "removed_api_still_documented",
       severity: "high",
       title: `\`${name}\` is documented but no longer exists in source`,
@@ -191,7 +190,7 @@ export function analyzeDocsDrift(
     if (!call) continue;
     if (call.callArgs !== api.params.length) {
       findings.push({
-        id: `dd-${idCounter++}`,
+        id: `dd-sig-${api.file}-${api.line}-${api.name}`,
         kind: "signature_mismatch",
         severity: "medium",
         title: `\`${api.name}\` example doesn't match its current signature`,
@@ -207,7 +206,7 @@ export function analyzeDocsDrift(
   for (const api of apis) {
     if (calls.has(api.name) || bareIdentifiers.has(api.name)) continue;
     findings.push({
-      id: `dd-${idCounter++}`,
+      id: `dd-undoc-${api.file}-${api.line}-${api.name}`,
       kind: "undocumented_export",
       severity: "low",
       title: `\`${api.name}\` is exported but never mentioned in the README`,
